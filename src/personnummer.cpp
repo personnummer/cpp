@@ -36,13 +36,11 @@ int stoi_or_fallback(const std::string &maybe_digit, int fallback) {
 }
 
 bool valid_date(int year, int month, int day) {
-  if (month < 1 || month > 12) {
+  if (month < 1 || month > 12)
     return false;
-  }
 
-  if (day < 1 || day > 31) {
+  if (day < 1 || day > 31)
     return false;
-  }
 
   if (day > 30) {
     switch (month) {
@@ -93,9 +91,8 @@ int checksum(std::tm date, int number) {
 }
 
 void collect_digits(std::vector<int> &digits, int num) {
-  if (num > 9) {
+  if (num > 9)
     collect_digits(digits, num / 10);
-  }
 
   digits.push_back(num % 10);
 }
@@ -107,7 +104,7 @@ void collect_digits_pad_zero(std::vector<int> &digits, int num, int min_len) {
   // Collect the digits from given number.
   collect_digits(section_digits, num);
 
-  // Add the potential padded seroes.
+  // Add the potential padded zeroes.
   int missing_digits = min_len - section_digits.size();
   for (int i = 0; i < missing_digits; i++) {
     section_digits.insert(section_digits.begin(), 0);

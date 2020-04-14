@@ -37,36 +37,36 @@ cmake \
 #include "personnummer.hpp"
 
 int main() {
-	Personnummer::Personnummer p;
-	std::string pnr = "19900101-0007";
+    Personnummer::Personnummer p;
+    std::string pnr = "19900101-0007";
 
-	bool is_valid = Personnummer::from_string(pnr, p);
+    bool is_valid = Personnummer::from_string(pnr, p);
 
-	if (!is_valid) {
-		std::cout << "could not parse social security number (nvalid syntax)\n";
-		return 1;
-	}
+    if (!is_valid) {
+        std::cout << "could not parse social security number (nvalid syntax)\n";
+        return 1;
+    }
 
     // Check date and luhn separate
-	if (p.is_valid_date()) {
-		std::cout << "invalid date\n";
-		return 1;
-	}
+    if (p.is_valid_date()) {
+        std::cout << "invalid date\n";
+        return 1;
+    }
 
-	if (p.is_valid_luhn()) {
-		std::cout << "invalid last four digits\n";
-		return 1;
-	}
+    if (p.is_valid_luhn()) {
+        std::cout << "invalid last four digits\n";
+        return 1;
+    }
 
-	// Or just check personnummer validity
-	if (!p.valid()) {
-		std::cout << "invalid social security number\n";
-		return 1;
-	}
+    // Or just check personnummer validity
+    if (!p.valid()) {
+        std::cout << "invalid social security number\n";
+        return 1;
+    }
 
-	std::cout << pnr << "is valid!\n";
+    std::cout << pnr << "is valid!\n";
 
-	return 0;
+    return 0;
 }
 ```
 
