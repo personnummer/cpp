@@ -80,3 +80,12 @@ After building, run the executable `unittest`.
 ```sh
 ./build/unittest
 ```
+
+## Format
+
+Code is (and should continue to be) formatted with `clang-format` and `llvm`
+style.
+
+```sh
+$ clang-format -i -style=llvm src/*.{cpp,hpp} test/unittest.cpp
+```
