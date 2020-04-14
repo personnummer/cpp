@@ -117,3 +117,5 @@ void collect_digits_pad_zero(std::vector<int> &digits, int num, int min_len) {
   digits.insert(digits.end(), section_digits.begin(), section_digits.end());
 }
 } // namespace Personnummer
+
+// vim: set ts=2 sw=2 et:

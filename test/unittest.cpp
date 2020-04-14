@@ -77,3 +77,5 @@ TEST_CASE("Valid personal number", "[pnr]") {
     }
   }
 }
+
+// vim: set ts=2 sw=2 et:

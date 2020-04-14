@@ -30,3 +30,5 @@ struct Personnummer {
 
 bool from_string(const std::string &pnr, Personnummer &personnummer);
 } // namespace Personnummer
+
+// vim: set ts=2 sw=2 et:
