@@ -1,30 +1,40 @@
 #include "personnummer.hpp"
+#include <iomanip>
 #include <regex>
+#include <sstream>
+#include <string>
 
-namespace Personnummer {
-bool from_string(const std::string &pnr, Personnummer &personnummer) {
+void Personnummer::from_string(const std::string &pnr) {
   std::regex pnr_regex(
       "^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-|+]?)?(\\d{3})(\\d?)$");
   std::smatch matches;
 
-  int century, year;
-
-  if (std::regex_search(pnr, matches, pnr_regex)) {
-    century = stoi_or_fallback(matches.str(1), 19);
-    year = stoi_or_fallback(matches.str(2), 0);
-
-    personnummer.date.tm_year = century * 100 + year;
-    personnummer.date.tm_mon = stoi_or_fallback(matches.str(3), 0);
-    personnummer.date.tm_mday = stoi_or_fallback(matches.str(4), 0);
-    personnummer.number = stoi_or_fallback(matches.str(6), 0);
-    personnummer.control = stoi_or_fallback(matches.str(7), 0);
-
-    personnummer.divider[0] = *matches.str(5).c_str();
-  } else {
-    return false;
+  if (!std::regex_search(pnr, matches, pnr_regex)) {
+    return;
   }
 
-  return true;
+  int century = stoi_or_fallback(matches.str(1), 19);
+  int year = stoi_or_fallback(matches.str(2), 0);
+
+  date.tm_year = century * 100 + year;
+  date.tm_mon = stoi_or_fallback(matches.str(3), 0);
+  date.tm_mday = stoi_or_fallback(matches.str(4), 0);
+  number = stoi_or_fallback(matches.str(6), 0);
+  control = stoi_or_fallback(matches.str(7), 0);
+
+  divider = *matches.str(5).c_str();
+}
+
+int Personnummer::checksum() const {
+  std::stringstream ss;
+  ss.fill('0');
+
+  ss << std::setw(2) << date.tm_year % 100 << std::setw(2) << date.tm_mon
+     << std::setw(2) << date.tm_mday << std::setw(3) << number;
+
+  auto str = ss.str();
+
+  return 10 - luhn(str.begin(), str.end());
 }
 
 int stoi_or_fallback(const std::string &maybe_digit, int fallback) {
@@ -64,55 +74,22 @@ bool valid_date(int year, int month, int day) {
   return true;
 }
 
-int checksum(std::tm date, int number) {
-  std::vector<int> digits;
-
-  collect_digits_pad_zero(digits, date.tm_year % 100, 2);
-  collect_digits_pad_zero(digits, date.tm_mon, 2);
-  collect_digits_pad_zero(digits, date.tm_mday, 2);
-  collect_digits_pad_zero(digits, number, 3);
-
+int luhn(std::string::iterator begin, std::string::iterator end) {
   int sum = 0;
 
-  for (int i = 0; i < digits.size(); i++) {
-    int temp = digits.at(i);
+  for (bool even = true; begin != end; ++begin, even ^= true) {
+    int digit = *begin - '0';
 
-    if (i % 2 == 0) {
-      temp *= 2;
-
-      if (temp > 9)
-        temp -= 9;
+    if (even) {
+      if ((digit *= 2) > 9)
+        digit -= 9;
     }
 
-    sum += temp;
+    if ((sum += digit) > 9)
+      sum -= 10;
   }
 
-  return 10 - (sum % 10);
+  return sum;
 }
-
-void collect_digits(std::vector<int> &digits, int num) {
-  if (num > 9)
-    collect_digits(digits, num / 10);
-
-  digits.push_back(num % 10);
-}
-
-void collect_digits_pad_zero(std::vector<int> &digits, int num, int min_len) {
-  // New vector for this section.
-  std::vector<int> section_digits;
-
-  // Collect the digits from given number.
-  collect_digits(section_digits, num);
-
-  // Add the potential padded zeroes.
-  int missing_digits = min_len - section_digits.size();
-  for (int i = 0; i < missing_digits; i++) {
-    section_digits.insert(section_digits.begin(), 0);
-  }
-
-  // Add the padded section to final vector.
-  digits.insert(digits.end(), section_digits.begin(), section_digits.end());
-}
-} // namespace Personnummer
 
 // vim: set ts=2 sw=2 et:

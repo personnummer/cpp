@@ -1,79 +1,54 @@
 #define CATCH_CONFIG_MAIN
-#include "../src/personnummer.hpp"
 #include "catch.hpp"
+#include "personnummer.hpp"
 
-TEST_CASE("Valid date", "[date]") {
-  std::vector<std::vector<int>> valid_dates = {
-      {1990, 1, 1},  {1990, 1, 31},
-      {1990, 2, 28}, {2016, 2, 29}, // 2016 is leap year
-      {2020, 4, 30},
-  };
+struct TestDate {
+  int year, month, day;
+  bool valid;
+  TestDate(int y, int m, int d, bool v) : year(y), month(m), day(d), valid(v) {}
 
-  std::vector<std::vector<int>> invalid_dates = {
-      {1990, 13, 1},
-      {1990, 1, 32},
-      {2017, 2, 29}, // 2017 is not leap year
-      {2020, 4, 31},
-  };
-
-  for (int i = 0; i < valid_dates.size(); i++) {
-    std::vector<int> test_case = valid_dates[i];
-
-    std::stringstream case_title;
-    case_title << "Testinv VALID: Y=" << test_case[0] << ", M=" << test_case[1]
-               << ", D=" << test_case[2];
-
-    SECTION(case_title.str()) {
-      REQUIRE(
-          Personnummer::valid_date(test_case[0], test_case[1], test_case[2]));
-    }
+  friend std::ostream &operator<<(std::ostream &out, const TestDate &fd) {
+    return out << "Y=" << fd.year << ", M=" << fd.month << ", D=" << fd.day;
   }
+};
 
-  for (int i = 0; i < invalid_dates.size(); i++) {
-    std::vector<int> test_case = invalid_dates[i];
+TEST_CASE("Validate date", "[date]") {
+  std::vector<TestDate> cases = {
+      TestDate(1990, 1, 1, true),
+      TestDate(1990, 1, 1, true),
+      TestDate(1990, 1, 31, true),
+      TestDate(1990, 2, 28, true),
+      TestDate(2016, 2, 29, true), // 2016 was leap year
+      TestDate(2020, 4, 30, true),
+      TestDate(1990, 13, 1, false),
+      TestDate(1990, 1, 32, false),
+      TestDate(2017, 2, 29, false), // 2017 was not leap year
+      TestDate(2020, 4, 31, false),
+  };
 
+  for (const auto &tc : cases) {
     std::stringstream case_title;
-    case_title << "Testinv INVALID: Y=" << test_case[0]
-               << ", M=" << test_case[1] << ", D=" << test_case[2];
+    case_title << "Testing " << tc;
 
     SECTION(case_title.str()) {
-      REQUIRE(
-          !Personnummer::valid_date(test_case[0], test_case[1], test_case[2]));
+      REQUIRE(valid_date(tc.year, tc.month, tc.day) == tc.valid);
     }
   }
 }
 
-TEST_CASE("Valid personal number", "[pnr]") {
-  Personnummer::Personnummer p;
-
-  std::vector<std::string> valid = {
-      "6403273813",   "510818-9167", "19900101-0017", "19130401+2931",
-      "196408233234", "0001010107",  "000101-0107",
+TEST_CASE("Validate social security number", "[pnr]") {
+  std::map<std::string, bool> cases = {
+      {"6403273813", true},    {"510818-9167", true},  {"19900101-0017", true},
+      {"19130401+2931", true}, {"196408233234", true}, {"0001010107", true},
+      {"000101-0107", true},   {"640327-381", false},  {"6403273814", false},
+      {"640327-3814", false},
   };
 
-  std::vector<std::string> invalid = {
-      "640327-381",
-      "6403273814",
-      "640327-3814",
-  };
+  for (const auto &test_case : cases) {
+    Personnummer pnr(test_case.first);
 
-  for (int i = 0; i < valid.size(); i++) {
-    std::stringstream case_title;
-    case_title << "Testing VALID: " << valid[i];
-
-    SECTION(case_title.str()) {
-      REQUIRE(Personnummer::from_string(valid[i], p));
-      REQUIRE(p.valid());
-    }
-  }
-
-  for (int i = 0; i < invalid.size(); i++) {
-    std::stringstream case_title;
-    case_title << "Testing INVALID: " << invalid[i];
-
-    SECTION(case_title.str()) {
-      REQUIRE(Personnummer::from_string(invalid[i], p));
-      REQUIRE(!p.valid());
+    SECTION("Testing " + test_case.first) {
+      REQUIRE(pnr.valid() == test_case.second);
     }
   }
 }
