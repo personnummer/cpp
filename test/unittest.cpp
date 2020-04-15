@@ -4,10 +4,17 @@
 
 struct TestDate {
   int year, month, day;
+  std::string pnr;
   bool valid;
+
   TestDate(int y, int m, int d, bool v) : year(y), month(m), day(d), valid(v) {}
+  TestDate(std::string p, bool v) : pnr(p), valid(v) {}
 
   friend std::ostream &operator<<(std::ostream &out, const TestDate &fd) {
+    if (fd.pnr != "") {
+      return out << "pnr=" << fd.pnr;
+    }
+
     return out << "Y=" << fd.year << ", M=" << fd.month << ", D=" << fd.day;
   }
 };
@@ -37,18 +44,40 @@ TEST_CASE("Validate date", "[date]") {
 }
 
 TEST_CASE("Validate social security number", "[pnr]") {
-  std::map<std::string, bool> cases = {
-      {"6403273813", true},    {"510818-9167", true},  {"19900101-0017", true},
-      {"19130401+2931", true}, {"196408233234", true}, {"0001010107", true},
-      {"000101-0107", true},   {"640327-381", false},  {"6403273814", false},
-      {"640327-3814", false},
+  std::vector<TestDate> cases = {
+      TestDate("6403273813", true),    TestDate("510818-9167", true),
+      TestDate("19900101-0017", true), TestDate("19130401+2931", true),
+      TestDate("196408233234", true),  TestDate("0001010107", true),
+      TestDate("000101-0107", true),   TestDate("640327-381", false),
+      TestDate("6403273814", false),   TestDate("640327-3814", false),
   };
 
-  for (const auto &test_case : cases) {
-    Personnummer pnr(test_case.first);
+  for (const auto &tc : cases) {
+    std::stringstream case_title;
+    case_title << "Testing " << tc;
 
-    SECTION("Testing " + test_case.first) {
-      REQUIRE(pnr.valid() == test_case.second);
+    SECTION(case_title.str()) {
+      Personnummer pnr(tc.pnr);
+      REQUIRE(pnr.valid() == tc.valid);
+    }
+  }
+}
+
+TEST_CASE("Validate luhn", "[luhn]") {
+  std::map<std::string, int> cases = {
+      {"900101001", 7}, {"640327381", 3}, {"640823323", 4},
+      {"000101010", 7}, {"510818916", 7}, {"130401293", 1},
+  };
+
+  for (const auto &tc : cases) {
+    std::string pnr = tc.first;
+    int control = tc.second;
+
+    std::stringstream case_title;
+    case_title << "Testing " << pnr;
+
+    SECTION(case_title.str()) {
+      REQUIRE(luhn(pnr.begin(), pnr.end()) == control);
     }
   }
 }

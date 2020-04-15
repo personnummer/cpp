@@ -4,39 +4,10 @@
 #include <sstream>
 #include <string>
 
-void Personnummer::from_string(const std::string &pnr) {
-  std::regex pnr_regex(
-      "^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-|+]?)?(\\d{3})(\\d?)$");
-  std::smatch matches;
-
-  if (!std::regex_search(pnr, matches, pnr_regex)) {
-    return;
-  }
-
-  int century = stoi_or_fallback(matches.str(1), 19);
-  int year = stoi_or_fallback(matches.str(2), 0);
-
-  date.tm_year = century * 100 + year;
-  date.tm_mon = stoi_or_fallback(matches.str(3), 0);
-  date.tm_mday = stoi_or_fallback(matches.str(4), 0);
-  number = stoi_or_fallback(matches.str(6), 0);
-  control = stoi_or_fallback(matches.str(7), 0);
-
-  divider = *matches.str(5).c_str();
-}
-
-int Personnummer::checksum() const {
-  std::stringstream ss;
-  ss.fill('0');
-
-  ss << std::setw(2) << date.tm_year % 100 << std::setw(2) << date.tm_mon
-     << std::setw(2) << date.tm_mday << std::setw(3) << number;
-
-  auto str = ss.str();
-
-  return 10 - luhn(str.begin(), str.end());
-}
-
+/*
+ * Convert a string to integer and if the conversion fails, return the fallback
+ * integer instead.
+ * */
 int stoi_or_fallback(const std::string &maybe_digit, int fallback) {
   try {
     return std::stoi(maybe_digit);
@@ -45,6 +16,10 @@ int stoi_or_fallback(const std::string &maybe_digit, int fallback) {
   }
 }
 
+/*
+ * Check if a date is valid or not. This implementation is here isntead of using
+ * something from newer chrono libraries to support C++11.
+ */
 bool valid_date(int year, int month, int day) {
   if (month < 1 || month > 12)
     return false;
@@ -74,10 +49,18 @@ bool valid_date(int year, int month, int day) {
   return true;
 }
 
+/*
+ * Return the result of applying luhn algoritm on the passed string iterator.
+ * See more at https://en.wikipedia.org/wiki/Luhn_algorithm
+ */
 int luhn(std::string::iterator begin, std::string::iterator end) {
   int sum = 0;
 
+  // Iterate from begin to end of string representation of the social security
+  // number. XOR the even bit every iteration to keep track of odd or even
+  // position in the sequence.
   for (bool even = true; begin != end; ++begin, even ^= true) {
+    // Conver the string value of the digit to an integer.
     int digit = *begin - '0';
 
     if (even) {
@@ -89,7 +72,55 @@ int luhn(std::string::iterator begin, std::string::iterator end) {
       sum -= 10;
   }
 
-  return sum;
+  return 10 - (sum % 10);
+}
+
+/*
+ * Receive a social security number string and set each part at appropreate
+ * place on the date field of the Personnummer class. If the string format
+ * isnt't valid nothing will be set.
+ */
+void Personnummer::from_string(const std::string &pnr) {
+  std::regex pnr_regex(
+      "^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-|+]?)?(\\d{3})(\\d?)$");
+  std::smatch matches;
+
+  if (!std::regex_search(pnr, matches, pnr_regex)) {
+    return;
+  }
+
+  int century = stoi_or_fallback(matches.str(1), 19);
+  int year = stoi_or_fallback(matches.str(2), 0);
+
+  date.tm_year = century * 100 + year;
+  date.tm_mon = stoi_or_fallback(matches.str(3), 0);
+  date.tm_mday = stoi_or_fallback(matches.str(4), 0);
+  number = stoi_or_fallback(matches.str(6), 0);
+  control = stoi_or_fallback(matches.str(7), 0);
+
+  divider = *matches.str(5).c_str();
+}
+
+/*
+ * Calculate the checksum for a given social security number by using the luhn
+ * algoritm. Ensures that each section is zero padded to get the correct control
+ * digit.
+ */
+int Personnummer::checksum() const {
+  std::stringstream ss;
+  ss.fill('0');
+
+  ss << std::setw(2) << date.tm_year % 100 << std::setw(2) << date.tm_mon
+     << std::setw(2) << date.tm_mday << std::setw(3) << number;
+
+  auto str = ss.str();
+
+  return luhn(str.begin(), str.end());
+}
+
+bool Personnummer::valid() const {
+  return valid_date(date.tm_year, date.tm_mon, date.tm_mday) &&
+         checksum() == control;
 }
 
 // vim: set ts=2 sw=2 et:
