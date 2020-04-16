@@ -191,4 +191,13 @@ TEST_CASE("Check coordination", "[coordination]") {
   }
 }
 
+TEST_CASE("Parse strign", "[parse]") {
+  std::string pnr_str = "19900101-0017";
+
+  Personnummer pnr = Personnummer::parse(pnr_str);
+
+  REQUIRE(pnr.valid());
+  REQUIRE(pnr.is_male());
+}
+
 // vim: set ts=2 sw=2 et:

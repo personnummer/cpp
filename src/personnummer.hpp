@@ -21,6 +21,8 @@ class Personnummer {
 public:
   Personnummer(const std::string &pnr) { from_string(pnr); }
 
+  static Personnummer parse(const std::string &pnr);
+
   std::string format(bool long_format = false) const;
   bool valid() const;
   int get_age() const;

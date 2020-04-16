@@ -78,6 +78,18 @@ int luhn(std::string::iterator begin, std::string::iterator end) {
 }
 
 /*
+ * Create a new instance of the Personnummer class by calling `parse()` on a
+ * static method. This is essentially the same as `Personnummer pnr(nr)` but is
+ * added to fulfil v3 of `personnummer`, see
+ * https://github.com/personnummer/meta#package-specification-v3
+ */
+Personnummer Personnummer::parse(const std::string &pnr) {
+  Personnummer pnr_instance(pnr);
+
+  return pnr_instance;
+}
+
+/*
  * Receive a social security number string and set each part at appropreate
  * place on the date field of the Personnummer class. If the string format
  * isnt't valid nothing will be set.
