@@ -1,4 +1,6 @@
 #include "personnummer.hpp"
+#include <cmath>
+#include <ctime>
 #include <iomanip>
 #include <regex>
 #include <sstream>
@@ -101,6 +103,44 @@ void Personnummer::from_string(const std::string &pnr) {
   divider = *matches.str(5).c_str();
 }
 
+std::string Personnummer::format(bool long_format) const {
+  std::stringstream ss;
+  ss.fill('0');
+
+  if (long_format) {
+    ss << std::setw(2) << date.tm_year / 100;
+  }
+
+  ss << std::setw(2) << date.tm_year % 100 << std::setw(2) << date.tm_mon
+     << std::setw(2) << date.tm_mday << "-" << std::setw(3) << number
+     << control;
+
+  return ss.str();
+}
+
+int Personnummer::get_age() const {
+  std::time_t now;
+  std::time(&now);
+  std::tm age;
+
+  age.tm_year = date.tm_year - 1900;
+  age.tm_mon = date.tm_mon - 1;
+  age.tm_mday = date.tm_mday % coordination_extra;
+
+  age.tm_sec = 0;
+  age.tm_min = 0;
+  age.tm_hour = 0;
+  age.tm_wday = 0;
+  age.tm_yday = 0;
+
+  double seconds = std::difftime(now, std::mktime(&age));
+
+  // Take height for leap year by adding 1/4th of a day (6h) each year.
+  int seconds_per_year = ((365 * 24) + 6) * 60 * 60;
+
+  return std::floor(seconds / seconds_per_year);
+}
+
 /*
  * Calculate the checksum for a given social security number by using the luhn
  * algoritm. Ensures that each section is zero padded to get the correct control
@@ -111,7 +151,8 @@ int Personnummer::checksum() const {
   ss.fill('0');
 
   ss << std::setw(2) << date.tm_year % 100 << std::setw(2) << date.tm_mon
-     << std::setw(2) << date.tm_mday << std::setw(3) << number;
+     << std::setw(2) << date.tm_mday % coordination_extra << std::setw(3)
+     << number;
 
   auto str = ss.str();
 
@@ -119,7 +160,8 @@ int Personnummer::checksum() const {
 }
 
 bool Personnummer::valid() const {
-  return valid_date(date.tm_year, date.tm_mon, date.tm_mday) &&
+  return valid_date(date.tm_year, date.tm_mon,
+                    date.tm_mday % coordination_extra) &&
          checksum() == control;
 }
 

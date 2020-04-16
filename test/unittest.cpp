@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "personnummer.hpp"
+#include <ctime>
 
 struct TestDate {
   int year, month, day;
@@ -17,6 +18,15 @@ struct TestDate {
 
     return out << "Y=" << fd.year << ", M=" << fd.month << ", D=" << fd.day;
   }
+};
+
+struct TestFormat {
+  std::string input;
+  std::string expected_short;
+  std::string expected_long;
+
+  TestFormat(std::string i, std::string s, std::string l)
+      : input(i), expected_short(s), expected_long(l) {}
 };
 
 TEST_CASE("Validate date", "[date]") {
@@ -78,6 +88,105 @@ TEST_CASE("Validate luhn", "[luhn]") {
 
     SECTION(case_title.str()) {
       REQUIRE(luhn(pnr.begin(), pnr.end()) == control);
+    }
+  }
+}
+
+TEST_CASE("Format number", "[format]") {
+  std::vector<TestFormat> cases = {
+      TestFormat("9001018080", "900101-8080", "19900101-8080"),
+      TestFormat("900101-8080", "900101-8080", "19900101-8080"),
+      TestFormat("900101+8080", "900101-8080", "19900101-8080"),
+      TestFormat("19900101-8080", "900101-8080", "19900101-8080"),
+      TestFormat("19900101+8080", "900101-8080", "19900101-8080"),
+      TestFormat("18900101-8080", "900101-8080", "18900101-8080"),
+  };
+
+  for (const auto &tc : cases) {
+    Personnummer pnr(tc.input);
+
+    REQUIRE(pnr.format() == tc.expected_short);
+    REQUIRE(pnr.format(false) == tc.expected_short);
+    REQUIRE(pnr.format(true) == tc.expected_long);
+  }
+}
+
+TEST_CASE("Check age", "[age]") {
+  time_t now_time = time(NULL);
+  tm *now = localtime(&now_time);
+
+  std::stringstream twenty_years_yesterday;
+  twenty_years_yesterday.fill('0');
+  twenty_years_yesterday << now->tm_year + 1900 - 20 << std::setw(2)
+                         << now->tm_mon + 1 << std::setw(2) << now->tm_mday - 1
+                         << "-1111";
+
+  std::stringstream twenty_years_tomorrow;
+  twenty_years_tomorrow.fill('0');
+  twenty_years_tomorrow << now->tm_year + 1900 - 20 << std::setw(2)
+                        << now->tm_mon + 1 << std::setw(2) << now->tm_mday + 1
+                        << "-2222";
+
+  std::stringstream one_hundred_one_jan;
+  one_hundred_one_jan.fill('0');
+  one_hundred_one_jan << now->tm_year + 1799 << std::setw(2) << 1
+                      << std::setw(2) << 1 << "-3333";
+
+  std::map<std::string, int> cases = {
+      {twenty_years_yesterday.str(), 20},
+      {twenty_years_tomorrow.str(), 19},
+      {one_hundred_one_jan.str(), 101},
+  };
+
+  for (const auto &tc : cases) {
+    Personnummer pnr(tc.first);
+    int age = tc.second;
+
+    std::stringstream case_title;
+    case_title << "Testing " << pnr.format(true);
+
+    SECTION(case_title.str()) { REQUIRE(pnr.get_age() == age); }
+  }
+}
+
+TEST_CASE("Check gender", "[gender]") {
+  std::map<std::string, bool> cases = {
+      {"800101-3294", false},
+      {"000903-6603", true},
+      {"19090903-6603", true},
+      {"800101+3294", false},
+  };
+
+  for (const auto &tc : cases) {
+    Personnummer pnr(tc.first);
+    int is_female = tc.second;
+
+    std::stringstream case_title;
+    case_title << "Testing " << pnr.format(true);
+
+    SECTION(case_title.str()) {
+      REQUIRE(pnr.is_female() == is_female);
+      REQUIRE(pnr.is_male() == !is_female);
+    }
+  }
+}
+
+TEST_CASE("Check coordination", "[coordination]") {
+  std::map<std::string, bool> cases = {
+      {"800161-3294", true},
+      {"800101-3294", false},
+  };
+
+  for (const auto &tc : cases) {
+    Personnummer pnr(tc.first);
+    int is_coordination_number = tc.second;
+
+    std::stringstream case_title;
+    case_title << "Testing " << pnr.format(true);
+
+    SECTION(case_title.str()) {
+      REQUIRE(pnr.valid());
+      REQUIRE(pnr.is_coordination_number() == is_coordination_number);
     }
   }
 }
