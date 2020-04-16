@@ -24,8 +24,9 @@ public:
   static Personnummer parse(const std::string &pnr);
 
   std::string format(bool long_format = false) const;
-  bool valid() const;
   int get_age() const;
+
+  bool valid() const;
   bool is_female() const { return (number % 10) % 2 == 0; }
   bool is_male() const { return !is_female(); };
   bool is_coordination_number() const { return date.tm_mday > 12; }

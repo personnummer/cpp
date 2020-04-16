@@ -115,6 +115,11 @@ void Personnummer::from_string(const std::string &pnr) {
   divider = *matches.str(5).c_str();
 }
 
+/*
+ * Format the social security number with a fixed divider (-). Defaults to short
+ * format (omits the century) but can output long format if `true` is passed as
+ * argument.
+ */
 std::string Personnummer::format(bool long_format) const {
   std::stringstream ss;
   ss.fill('0');
@@ -130,6 +135,11 @@ std::string Personnummer::format(bool long_format) const {
   return ss.str();
 }
 
+/*
+ * Return the age of the person by calculating the diff between now and the day
+ * the person was born. This is calculated in seconds, assuming each year has 6
+ * extra hours due to leap year, without considering time zones.
+ */
 int Personnummer::get_age() const {
   std::time_t now;
   std::time(&now);
