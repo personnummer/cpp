@@ -175,6 +175,7 @@ TEST_CASE("Check coordination", "[coordination]") {
   std::map<std::string, bool> cases = {
       {"800161-3294", true},
       {"800101-3294", false},
+      {"640327-3813", false},
   };
 
   for (const auto &tc : cases) {

@@ -29,7 +29,7 @@ public:
   bool valid() const;
   bool is_female() const { return (number % 10) % 2 == 0; }
   bool is_male() const { return !is_female(); };
-  bool is_coordination_number() const { return date.tm_mday > 12; }
+  bool is_coordination_number() const { return date.tm_mday > 31; }
 };
 
 // vim: set ts=2 sw=2 et:
