@@ -74,7 +74,9 @@ int luhn(std::string::iterator begin, std::string::iterator end) {
       sum -= 10;
   }
 
-  return 10 - (sum % 10);
+  int checksum = 10 - (sum % 10);
+
+  return checksum == 10 ? 0 : checksum;
 }
 
 /*
