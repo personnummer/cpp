@@ -58,7 +58,7 @@ bool valid_date(int year, int month, int day) {
 int luhn(std::string::iterator begin, std::string::iterator end) {
   int sum = 0;
 
-  // Iterate from begin to end of string representation of the social security
+  // Iterate from begin to end of string representation of the personal identity
   // number. XOR the even bit every iteration to keep track of odd or even
   // position in the sequence.
   for (bool even = true; begin != end; ++begin, even ^= true) {
@@ -92,7 +92,7 @@ Personnummer Personnummer::parse(const std::string &pnr) {
 }
 
 /*
- * Receive a social security number string and set each part at appropreate
+ * Receive a personal identity number string and set each part at appropreate
  * place on the date field of the Personnummer class. If the string format
  * isnt't valid nothing will be set.
  */
@@ -118,9 +118,9 @@ void Personnummer::from_string(const std::string &pnr) {
 }
 
 /*
- * Format the social security number with a fixed divider (-). Defaults to short
- * format (omits the century) but can output long format if `true` is passed as
- * argument.
+ * Format the personal identity number with a fixed divider (-). Defaults to
+ * short format (omits the century) but can output long format if `true` is
+ * passed as argument.
  */
 std::string Personnummer::format(bool long_format) const {
   std::stringstream ss;
@@ -166,7 +166,7 @@ int Personnummer::get_age() const {
 }
 
 /*
- * Calculate the checksum for a given social security number by using the luhn
+ * Calculate the checksum for a given personal identity number by using the luhn
  * algoritm. Ensures that each section is zero padded to get the correct control
  * digit.
  */

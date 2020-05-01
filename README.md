@@ -1,6 +1,8 @@
 # cpp-personnummer
 
-Swedish social security number validation implemented in C++.
+Validate Swedish [personal identity
+numbers](https://en.wikipedia.org/wiki/Personal_identity_number_(Sweden)) with
+[C++](https://isocpp.org/)
 
 ## Build
 
@@ -47,7 +49,7 @@ int main() {
     Personnummer pnr(ssn);
 
     if (!pnr.valid()) {
-        std::cout << "invalid social security number\n";
+        std::cout << "invalid personal identity number\n";
         return 1;
     }
 

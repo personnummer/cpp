@@ -53,7 +53,7 @@ TEST_CASE("Validate date", "[date]") {
   }
 }
 
-TEST_CASE("Validate social security number", "[pnr]") {
+TEST_CASE("Validate personal identity number", "[pnr]") {
   std::vector<TestDate> cases = {
       TestDate("6403273813", true),    TestDate("510818-9167", true),
       TestDate("19900101-0017", true), TestDate("19130401+2931", true),
