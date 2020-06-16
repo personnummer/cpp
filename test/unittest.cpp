@@ -60,7 +60,7 @@ TEST_CASE("Validate personal identity number", "[pnr]") {
       TestDate("196408233234", true),  TestDate("0001010107", true),
       TestDate("000101-0107", true),   TestDate("640327-381", false),
       TestDate("6403273814", false),   TestDate("640327-3814", false),
-      TestDate("19090903-6600", true),
+      TestDate("19090903-6600", true), TestDate("20150916-0006", false),
   };
 
   for (const auto &tc : cases) {
@@ -76,9 +76,8 @@ TEST_CASE("Validate personal identity number", "[pnr]") {
 
 TEST_CASE("Validate luhn", "[luhn]") {
   std::map<std::string, int> cases = {
-      {"900101001", 7}, {"640327381", 3}, {"640823323", 4},
-      {"000101010", 7}, {"510818916", 7}, {"130401293", 1},
-      {"090903660", 0},
+      {"900101001", 7}, {"640327381", 3}, {"640823323", 4}, {"000101010", 7},
+      {"510818916", 7}, {"130401293", 1}, {"090903660", 0},
   };
 
   for (const auto &tc : cases) {

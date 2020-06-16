@@ -186,7 +186,7 @@ int Personnummer::checksum() const {
 bool Personnummer::valid() const {
   return valid_date(date.tm_year, date.tm_mon,
                     date.tm_mday % coordination_extra) &&
-         checksum() == control;
+         number > 0 && checksum() == control;
 }
 
 // vim: set ts=2 sw=2 et:
