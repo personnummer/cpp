@@ -15,6 +15,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    # Set timezone so we can assume the tests getting age will work.
+    - name: Setup timezone
+      uses: zcong1993/setup-timezone@master
+      with:
+        timezone: Europe/Stockholm
+
     - name: cmake
       run: |
        cmake \
@@ -26,7 +33,7 @@ jobs:
        -DWITH_TEST=1 \
        -H$GITHUB_WORKSPACE \
        -B$GITHUB_WORKSPACE/build
-        
+
     - name: cmake build
       run: |
        cmake \
