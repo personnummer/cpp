@@ -98,7 +98,7 @@ Personnummer Personnummer::parse(const std::string &pnr) {
  */
 void Personnummer::from_string(const std::string &pnr) {
   std::regex pnr_regex(
-      "^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-|+]?)?(\\d{3})(\\d?)$");
+      "^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-+]?)?(\\d{3})(\\d?)$");
   std::smatch matches;
 
   if (!std::regex_search(pnr, matches, pnr_regex)) {
