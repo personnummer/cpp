@@ -74,9 +74,9 @@ Or use the make target in `build/Makefile` and run `make test`.
 
 ## Format
 
-Code is (and should continue to be) formatted with `clang-format` and `llvm`
-style.
+Code is (and should continue to be) formatted with `clang-format`, the default
+settings for VS Code.
 
 ```sh
-$ clang-format -i -style=llvm src/*.{cpp,hpp} test/unittest.cpp
+$ clang-format -i src/*.{cpp,hpp} test/unittest.cpp
 ```

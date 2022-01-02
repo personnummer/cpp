@@ -10,10 +10,14 @@
  * Convert a string to integer and if the conversion fails, return the fallback
  * integer instead.
  * */
-int stoi_or_fallback(const std::string &maybe_digit, int fallback) {
-  try {
+int stoi_or_fallback(const std::string &maybe_digit, int fallback)
+{
+  try
+  {
     return std::stoi(maybe_digit);
-  } catch (...) {
+  }
+  catch (...)
+  {
     return fallback;
   }
 }
@@ -22,15 +26,18 @@ int stoi_or_fallback(const std::string &maybe_digit, int fallback) {
  * Check if a date is valid or not. This implementation is here isntead of using
  * something from newer chrono libraries to support C++11.
  */
-bool valid_date(int year, int month, int day) {
+bool valid_date(int year, int month, int day)
+{
   if (month < 1 || month > 12)
     return false;
 
   if (day < 1 || day > 31)
     return false;
 
-  if (day > 30) {
-    switch (month) {
+  if (day > 30)
+  {
+    switch (month)
+    {
     case 2:
     case 4:
     case 6:
@@ -40,10 +47,12 @@ bool valid_date(int year, int month, int day) {
     }
   }
 
-  if (month == 2 && day > 28) {
+  if (month == 2 && day > 28)
+  {
     bool is_leap_year = year % 400 == 0 || (year % 100 != 0 && year % 4 == 0);
 
-    if (day != 29 || !is_leap_year) {
+    if (day != 29 || !is_leap_year)
+    {
       return false;
     }
   }
@@ -55,17 +64,20 @@ bool valid_date(int year, int month, int day) {
  * Return the result of applying luhn algoritm on the passed string iterator.
  * See more at https://en.wikipedia.org/wiki/Luhn_algorithm
  */
-int luhn(std::string::iterator begin, std::string::iterator end) {
+int luhn(std::string::iterator begin, std::string::iterator end)
+{
   int sum = 0;
 
   // Iterate from begin to end of string representation of the personal identity
   // number. XOR the even bit every iteration to keep track of odd or even
   // position in the sequence.
-  for (bool even = true; begin != end; ++begin, even ^= true) {
+  for (bool even = true; begin != end; ++begin, even ^= true)
+  {
     // Conver the string value of the digit to an integer.
     int digit = *begin - '0';
 
-    if (even) {
+    if (even)
+    {
       if ((digit *= 2) > 9)
         digit -= 9;
     }
@@ -85,7 +97,8 @@ int luhn(std::string::iterator begin, std::string::iterator end) {
  * added to fulfil v3 of `personnummer`, see
  * https://github.com/personnummer/meta#package-specification-v3
  */
-Personnummer Personnummer::parse(const std::string &pnr) {
+Personnummer Personnummer::parse(const std::string &pnr)
+{
   Personnummer pnr_instance(pnr);
 
   return pnr_instance;
@@ -96,12 +109,13 @@ Personnummer Personnummer::parse(const std::string &pnr) {
  * place on the date field of the Personnummer class. If the string format
  * isnt't valid nothing will be set.
  */
-void Personnummer::from_string(const std::string &pnr) {
-  std::regex pnr_regex(
-      "^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-+]?)?(\\d{3})(\\d?)$");
+void Personnummer::from_string(const std::string &pnr)
+{
+  std::regex pnr_regex("^(\\d{2})?(\\d{2})(\\d{2})(\\d{2})([-+]?)?(\\d{3})(\\d?)$");
   std::smatch matches;
 
-  if (!std::regex_search(pnr, matches, pnr_regex)) {
+  if (!std::regex_search(pnr, matches, pnr_regex))
+  {
     return;
   }
 
@@ -122,11 +136,13 @@ void Personnummer::from_string(const std::string &pnr) {
  * short format (omits the century) but can output long format if `true` is
  * passed as argument.
  */
-std::string Personnummer::format(bool long_format) const {
+std::string Personnummer::format(bool long_format) const
+{
   std::stringstream ss;
   ss.fill('0');
 
-  if (long_format) {
+  if (long_format)
+  {
     ss << std::setw(2) << date.tm_year / 100;
   }
 
@@ -142,7 +158,8 @@ std::string Personnummer::format(bool long_format) const {
  * the person was born. This is calculated in seconds, assuming each year has 6
  * extra hours due to leap year, without considering time zones.
  */
-int Personnummer::get_age() const {
+int Personnummer::get_age() const
+{
   std::time_t now;
   std::time(&now);
   std::tm age;
@@ -170,7 +187,8 @@ int Personnummer::get_age() const {
  * algoritm. Ensures that each section is zero padded to get the correct control
  * digit.
  */
-int Personnummer::checksum() const {
+int Personnummer::checksum() const
+{
   std::stringstream ss;
   ss.fill('0');
 
@@ -183,7 +201,8 @@ int Personnummer::checksum() const {
   return luhn(str.begin(), str.end());
 }
 
-bool Personnummer::valid() const {
+bool Personnummer::valid() const
+{
   return valid_date(date.tm_year, date.tm_mon,
                     date.tm_mday % coordination_extra) &&
          number > 0 && checksum() == control;

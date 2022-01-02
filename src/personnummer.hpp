@@ -6,10 +6,10 @@
 const int coordination_extra = 60;
 
 bool valid_date(int year, int month, int day);
-
 int luhn(std::string::iterator begin, std::string::iterator end);
 
-class Personnummer {
+class Personnummer
+{
   std::tm date;
   int number;
   int control;
@@ -25,7 +25,6 @@ public:
 
   std::string format(bool long_format = false) const;
   int get_age() const;
-
   bool valid() const;
   bool is_female() const { return (number % 10) % 2 == 0; }
   bool is_male() const { return !is_female(); };
