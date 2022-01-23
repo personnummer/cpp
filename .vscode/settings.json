@@ -61,6 +61,7 @@
         "shared_mutex": "cpp"
     },
     "cmake.configureSettings": {
-        "WITH_TEST": "ON"
+        "WITH_TEST": "ON",
+        "WITH_EXAMPLES": "ON",
     }
 }
