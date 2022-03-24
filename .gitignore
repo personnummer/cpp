@@ -1,4 +1,7 @@
 build
+*.dSYM
+test/unittest
+examples/main
 
 # Created by https://www.gitignore.io/api/g++,macOS,code,vim
 # Edit at https://www.gitignore.io/?templates=g++,macOS,code,vim

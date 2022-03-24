@@ -56,6 +56,12 @@
         "iomanip": "cpp",
         "mutex": "cpp",
         "thread": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "bit": "cpp",
+        "shared_mutex": "cpp"
+    },
+    "cmake.configureSettings": {
+        "WITH_TEST": "ON",
+        "WITH_EXAMPLES": "ON",
     }
 }

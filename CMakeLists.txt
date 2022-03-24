@@ -10,3 +10,7 @@ if (WITH_TEST)
     enable_testing()
     add_subdirectory(test)
 endif()
+
+if (WITH_EXAMPLES)
+    add_subdirectory(examples)
+endif()

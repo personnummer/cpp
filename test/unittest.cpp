@@ -3,7 +3,8 @@
 #include "personnummer.hpp"
 #include <ctime>
 
-struct TestDate {
+struct TestDate
+{
   int year, month, day;
   std::string pnr;
   bool valid;
@@ -11,8 +12,10 @@ struct TestDate {
   TestDate(int y, int m, int d, bool v) : year(y), month(m), day(d), valid(v) {}
   TestDate(std::string p, bool v) : pnr(p), valid(v) {}
 
-  friend std::ostream &operator<<(std::ostream &out, const TestDate &fd) {
-    if (fd.pnr != "") {
+  friend std::ostream &operator<<(std::ostream &out, const TestDate &fd)
+  {
+    if (fd.pnr != "")
+    {
       return out << "pnr=" << fd.pnr;
     }
 
@@ -20,7 +23,8 @@ struct TestDate {
   }
 };
 
-struct TestFormat {
+struct TestFormat
+{
   std::string input;
   std::string expected_short;
   std::string expected_long;
@@ -29,7 +33,8 @@ struct TestFormat {
       : input(i), expected_short(s), expected_long(l) {}
 };
 
-TEST_CASE("Validate date", "[date]") {
+TEST_CASE("Validate date", "[date]")
+{
   std::vector<TestDate> cases = {
       TestDate(1990, 1, 1, true),
       TestDate(1990, 1, 1, true),
@@ -43,57 +48,77 @@ TEST_CASE("Validate date", "[date]") {
       TestDate(2020, 4, 31, false),
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     std::stringstream case_title;
     case_title << "Testing " << tc;
 
-    SECTION(case_title.str()) {
+    SECTION(case_title.str())
+    {
       REQUIRE(valid_date(tc.year, tc.month, tc.day) == tc.valid);
     }
   }
 }
 
-TEST_CASE("Validate personal identity number", "[pnr]") {
+TEST_CASE("Validate personal identity number", "[pnr]")
+{
   std::vector<TestDate> cases = {
-      TestDate("6403273813", true),    TestDate("510818-9167", true),
-      TestDate("19900101-0017", true), TestDate("19130401+2931", true),
-      TestDate("196408233234", true),  TestDate("0001010107", true),
-      TestDate("000101-0107", true),   TestDate("640327-381", false),
-      TestDate("6403273814", false),   TestDate("640327-3814", false),
-      TestDate("19090903-6600", true), TestDate("20150916-0006", false),
+      TestDate("6403273813", true),
+      TestDate("510818-9167", true),
+      TestDate("19900101-0017", true),
+      TestDate("19130401+2931", true),
+      TestDate("196408233234", true),
+      TestDate("0001010107", true),
+      TestDate("000101-0107", true),
+      TestDate("640327-381", false),
+      TestDate("6403273814", false),
+      TestDate("640327-3814", false),
+      TestDate("19090903-6600", true),
+      TestDate("20150916-0006", false),
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     std::stringstream case_title;
     case_title << "Testing " << tc;
 
-    SECTION(case_title.str()) {
+    SECTION(case_title.str())
+    {
       Personnummer pnr(tc.pnr);
       REQUIRE(pnr.valid() == tc.valid);
     }
   }
 }
 
-TEST_CASE("Validate luhn", "[luhn]") {
+TEST_CASE("Validate luhn", "[luhn]")
+{
   std::map<std::string, int> cases = {
-      {"900101001", 7}, {"640327381", 3}, {"640823323", 4}, {"000101010", 7},
-      {"510818916", 7}, {"130401293", 1}, {"090903660", 0},
+      {"900101001", 7},
+      {"640327381", 3},
+      {"640823323", 4},
+      {"000101010", 7},
+      {"510818916", 7},
+      {"130401293", 1},
+      {"090903660", 0},
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     std::string pnr = tc.first;
     int control = tc.second;
 
     std::stringstream case_title;
     case_title << "Testing " << pnr;
 
-    SECTION(case_title.str()) {
+    SECTION(case_title.str())
+    {
       REQUIRE(luhn(pnr.begin(), pnr.end()) == control);
     }
   }
 }
 
-TEST_CASE("Format number", "[format]") {
+TEST_CASE("Format number", "[format]")
+{
   std::vector<TestFormat> cases = {
       TestFormat("9001018080", "900101-8080", "19900101-8080"),
       TestFormat("900101-8080", "900101-8080", "19900101-8080"),
@@ -103,7 +128,8 @@ TEST_CASE("Format number", "[format]") {
       TestFormat("18900101-8080", "900101-8080", "18900101-8080"),
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     Personnummer pnr(tc.input);
 
     REQUIRE(pnr.format() == tc.expected_short);
@@ -112,7 +138,8 @@ TEST_CASE("Format number", "[format]") {
   }
 }
 
-TEST_CASE("Check age", "[age]") {
+TEST_CASE("Check age", "[age]")
+{
   time_t now_time = time(NULL);
   tm *now = localtime(&now_time);
 
@@ -139,7 +166,8 @@ TEST_CASE("Check age", "[age]") {
       {one_hundred_one_jan.str(), 101},
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     Personnummer pnr(tc.first);
     int age = tc.second;
 
@@ -150,7 +178,8 @@ TEST_CASE("Check age", "[age]") {
   }
 }
 
-TEST_CASE("Check gender", "[gender]") {
+TEST_CASE("Check gender", "[gender]")
+{
   std::map<std::string, bool> cases = {
       {"800101-3294", false},
       {"000903-6603", true},
@@ -158,42 +187,48 @@ TEST_CASE("Check gender", "[gender]") {
       {"800101+3294", false},
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     Personnummer pnr(tc.first);
     int is_female = tc.second;
 
     std::stringstream case_title;
     case_title << "Testing " << pnr.format(true);
 
-    SECTION(case_title.str()) {
+    SECTION(case_title.str())
+    {
       REQUIRE(pnr.is_female() == is_female);
       REQUIRE(pnr.is_male() == !is_female);
     }
   }
 }
 
-TEST_CASE("Check coordination", "[coordination]") {
+TEST_CASE("Check coordination", "[coordination]")
+{
   std::map<std::string, bool> cases = {
       {"800161-3294", true},
       {"800101-3294", false},
       {"640327-3813", false},
   };
 
-  for (const auto &tc : cases) {
+  for (const auto &tc : cases)
+  {
     Personnummer pnr(tc.first);
     int is_coordination_number = tc.second;
 
     std::stringstream case_title;
     case_title << "Testing " << pnr.format(true);
 
-    SECTION(case_title.str()) {
+    SECTION(case_title.str())
+    {
       REQUIRE(pnr.valid());
       REQUIRE(pnr.is_coordination_number() == is_coordination_number);
     }
   }
 }
 
-TEST_CASE("Parse strign", "[parse]") {
+TEST_CASE("Parse strign", "[parse]")
+{
   std::string pnr_str = "19900101-0017";
 
   Personnummer pnr = Personnummer::parse(pnr_str);

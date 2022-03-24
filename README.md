@@ -1,7 +1,7 @@
 # cpp-personnummer
 
 Validate Swedish [personal identity
-numbers](https://en.wikipedia.org/wiki/Personal_identity_number_(Sweden)) with
+numbers](<https://en.wikipedia.org/wiki/Personal_identity_number_(Sweden)>) with
 [C++](https://isocpp.org/)
 
 ## Build
@@ -18,6 +18,7 @@ cmake \
     -DCMAKE_C_COMPILER:FILEPATH=/usr/bin/clang \
     -DCMAKE_CXX_COMPILER:FILEPATH=/usr/bin/clang++ \
     -DWITH_TEST=1 \
+    -DWITH_EXAMPLES=1 \
     -H$(pwd) \
     -B$(pwd)/build
 ```
@@ -40,24 +41,7 @@ cmake \
 * Link library with your code `g++ -Wall -I/include/path -L/library/path
   your_program.cpp -lPersonnummer`
 
-```cpp
-#include <string>
-#include "personnummer.hpp"
-
-int main() {
-    std::string ssn = "19900101-0007"
-    Personnummer pnr(ssn);
-
-    if (!pnr.valid()) {
-        std::cout << "invalid personal identity number\n";
-        return 1;
-    }
-
-    std::cout << ssn << "is valid!\n";
-
-    return 0;
-}
-```
+See [examples](./examples) for code examples.
 
 ## Testing
 
@@ -74,9 +58,9 @@ Or use the make target in `build/Makefile` and run `make test`.
 
 ## Format
 
-Code is (and should continue to be) formatted with `clang-format` and `llvm`
-style.
+Code is (and should continue to be) formatted with `clang-format`, the default
+settings for VS Code.
 
 ```sh
-$ clang-format -i -style=llvm src/*.{cpp,hpp} test/unittest.cpp
+$ clang-format -i src/*.{cpp,hpp} test/unittest.cpp
 ```
