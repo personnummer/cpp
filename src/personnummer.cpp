@@ -2,6 +2,7 @@
 #include <cmath>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -160,26 +161,26 @@ std::string Personnummer::format(bool long_format) const
  */
 int Personnummer::get_age() const
 {
-  std::time_t now;
-  std::time(&now);
-  std::tm age;
+  std::time_t t = std::time(0);
+  std::tm *now = std::localtime(&t);
+  int current_year = now->tm_year + 1900;
+  int current_mon = now->tm_mon + 1;
 
-  age.tm_year = date.tm_year - 1900;
-  age.tm_mon = date.tm_mon - 1;
-  age.tm_mday = date.tm_mday % coordination_extra;
-
-  age.tm_sec = 0;
-  age.tm_min = 0;
-  age.tm_hour = 0;
-  age.tm_wday = 0;
-  age.tm_yday = 0;
-
-  double seconds = std::difftime(now, std::mktime(&age));
-
-  // Take height for leap year by adding 1/4th of a day (6h) each year.
-  int seconds_per_year = ((365 * 24) + 6) * 60 * 60;
-
-  return std::floor(seconds / seconds_per_year);
+  if (date.tm_mon > current_mon)
+  {
+    return current_year - date.tm_year - 1;
+  }
+  else
+  {
+    if (date.tm_mon == current_mon && date.tm_mday > now->tm_mday)
+    {
+      return current_year - date.tm_year - 1;
+    }
+    else
+    {
+      return current_year - date.tm_year;
+    }
+  }
 }
 
 /*
