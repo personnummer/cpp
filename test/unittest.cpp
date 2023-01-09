@@ -1,3 +1,5 @@
+#pragma warning(disable : 4996) //_CRT_SECURE_NO_WARNINGS
+
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "personnummer.hpp"
@@ -190,7 +192,7 @@ TEST_CASE("Check gender", "[gender]")
   for (const auto &tc : cases)
   {
     Personnummer pnr(tc.first);
-    int is_female = tc.second;
+    bool is_female = tc.second;
 
     std::stringstream case_title;
     case_title << "Testing " << pnr.format(true);
@@ -214,7 +216,7 @@ TEST_CASE("Check coordination", "[coordination]")
   for (const auto &tc : cases)
   {
     Personnummer pnr(tc.first);
-    int is_coordination_number = tc.second;
+    bool is_coordination_number = tc.second;
 
     std::stringstream case_title;
     case_title << "Testing " << pnr.format(true);
