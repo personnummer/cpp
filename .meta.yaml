@@ -1,0 +1,4 @@
+name: "C/C++"
+maintainer: "@bombsimon"
+spec: 3.0
+workflow: "ccpp.yml"
