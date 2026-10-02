@@ -64,3 +64,7 @@ settings for VS Code.
 ```sh
 $ clang-format -i src/*.{cpp,hpp} test/unittest.cpp
 ```
+
+## In memoriam
+
+Fredrik "Frozzare" Forsmo (1991-2026) was the initiator, co-founder and a core contributor of the personnummer project. This library carries his work. He is missed.
